@@ -17,60 +17,9 @@ jobs:
         run: |
           docker build . --tag bashofmann/neuvector-github-action-example:latest
       - name: Scan Image
-        run: |          
-          high_vul_to_fail=1
-          medium_vul_to_fail=1
-          vul_names_to_fail=""
-
-          current_dir=$(pwd)
-          rm -rf nvreport
-          mkdir nvreport
-
-          docker run --name neuvector.scanner --rm -e SCANNER_REPOSITORY=bashofmann/neuvector-github-action-example -e SCANNER_TAG=latest -e SCANNER_ON_DEMAND=true -v /var/run/docker.sock:/var/run/docker.sock -v $current_dir:/var/neuvector neuvector/scanner:latest
-
-          cp $current_dir/scan_result.json ./nvreport/scan-repository.json
-          filename="./nvreport/security-report.csv"
-          labels='"name","score","severity","description","package_name","package_version","fixed_version","link","published_timestamp","last_modified_timestamp"'
-          vars=".name,.score,.severity,.description,.package_name,.package_version,.fixed_version,.link,.published_timestamp,.last_modified_timestamp"
-          query='"report".vulnerabilities[]'
-          #transform and export to csv file - scan report
-          cat ./nvreport/scan-repository.json | jq -r '['$labels'],(.'$query' | ['$vars'])|@csv' > $filename
-          VUL_NUM=`cat ./nvreport/scan-repository.json | jq '.report.vulnerabilities | length'`
-          if [ $VUL_NUM -eq 0 ]; then
-            echo No vulnerabilities found.
-          else
-            echo Total number of vulnerabilities, $VUL_NUM, grouped by package name with vulnerability name.
-            jq '[.report.vulnerabilities | group_by(.package_name) | .[] | {package_name: .[0].package_name, vuln_name: [.[].name]}]' ./nvreport/scan-repository.json
-          fi
-          FOUND_HIGH=`cat ./nvreport/scan-repository.json | jq '.report.vulnerabilities[] | select(.severity == "High") | .severity' | wc -l`
-          FOUND_MEDIUM=`cat ./nvreport/scan-repository.json | jq '.report.vulnerabilities[] | select(.severity == "Medium") | .severity' | wc -l`
-          VUL_LIST=`printf '["%s"]' "${vul_names_to_fail//,/\",\"}"`
-          VUL_LIST_FOUND=`cat ./nvreport/scan-repository.json | jq --arg arr "$VUL_LIST" '.report.vulnerabilities[] | select(.name as $n | $arr | index($n)) |.name'`
-
-          if [ -z "$VUL_LIST_FOUND" ]; then
-            echo -e "Found High Vulnerabilities = $FOUND_HIGH \nFound Medium Vulnerabilities = $FOUND_MEDIUM \n" > ./nvreport/scan-summary.txt
-          else
-            echo -e "Found specific named vulnerabilities: \n$VUL_LIST_FOUND \n\nHigh Vulnerabilities threshold = $high_vul_to_fail \nFound High Vulnerabilities = $FOUND_HIGH \n\nMedium vulnerabilities threshold = $medium_vul_to_fail\nFound Medium Vulnerabilities = $FOUND_MEDIUM \n" > ./nvreport/scan-summary.txt
-          fi
-    
-          if [[ ! -z $VUL_LIST_FOUND ]]; then
-            echo Fail due to found specific named vulnerabilities.
-            scan_fail="true"
-          elif [ $high_vul_to_fail -ne 0 -a $FOUND_HIGH -ge $high_vul_to_fail ]; then
-            echo Fail due to high vulnerabilities found exceeds the criteria.
-            scan_fail="true"
-          elif [ $medium_vul_to_fail -ne 0 -a $FOUND_MEDIUM -ge $medium_vul_to_fail ]; then
-            echo Fail due to medium vulnerabilities found exceeds the criteria.
-            scan_fail="true"
-          else
-            echo Pass the criteria check.
-            scan_fail="false"
-          fi
-
-          if [ $scan_fail == "true" ]; then
-            echo -e "Image scanning failed.\n\n" >> ./nvreport/scan-summary.txt
-            cat ./nvreport/scan-summary.txt
-            exit 1
-          else
-            echo -e "Image scanning succeed.\n\n" >> ./nvreport/scan-summary.txt
-          fi
+        uses: bashofmann/neuvector-image-scan-action@master
+        with:
+          image-repository: bashofmann
+          image-tag: latest
+          min-high-cves-to-fail: '1'
+          min-medium-cves-to-fail: '1'
