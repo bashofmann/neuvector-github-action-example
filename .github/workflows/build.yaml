@@ -73,3 +73,5 @@ jobs:
           else
             echo -e "Image scanning succeed.\n\n" >> ./nvreport/scan-summary.txt
           fi
+          
+          cat ./nvreport/scan-summary.txt
