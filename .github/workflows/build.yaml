@@ -8,17 +8,6 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    services:
-      neuvector-scanner:
-        image: neuvector/controller
-        ports:
-          - 18301:18301
-          - 18300:18300
-          - 18400:18400
-          - 18301:18301/udp
-          - 18300:18300/udp
-          - 18400:18400/udp
-          - 10443:10443
     env:
       NV_LOGIN_JSON: '{"password":{"username":"admin","password":"admin"}}'
       NV_SCANNING_JSON: '{"request":{"registry":"","username":"","password":"","repository":"bashofmann/neuvector-github-action-example","tag":"latest"}}'
@@ -32,7 +21,9 @@ jobs:
         with:
           push: false
           tags: bashofmann/neuvector-github-action-example:latest
-#      - docker run -itd --privileged --name neuvector.controller -e CLUSTER_JOIN_ADDR=$CI_SERVER_HOST -p 18301:18301 -p 18301:18301/udp -p 18300:18300 -p 18400:18400  -p $NV_PORT:$NV_PORT -v /var/neuvector:/var/neuvector -v /var/run/docker.sock:/var/run/docker.sock -v /proc:/host/proc:ro -v /sys/fs/cgroup/:/host/cgroup/:ro $NV_IMAGE
+      - name: Run NeuVector
+        run: |
+          docker run -itd --privileged --name neuvector.controller -e CLUSTER_JOIN_ADDR=localhost -p 18301:18301 -p 18301:18301/udp -p 18300:18300 -p 18400:18400  -p 10443:10443 -v /var/neuvector:/var/neuvector -v /var/run/docker.sock:/var/run/docker.sock -v /proc:/host/proc:ro -v /sys/fs/cgroup/:/host/cgroup/:ro neuvector/controller
       - name: Login to NeuVector
         run: |
           _COUNTER_="0"
@@ -52,3 +43,5 @@ jobs:
       - name: Logout
         run: |
           curl https://localhost:10443/v1/auth -k -X 'DELETE' -H "Content-Type:application/json" -H "X-Auth-Token:$TOKEN"
+          docker stop neuvector.controller
+          docker rm neuvector.controller
