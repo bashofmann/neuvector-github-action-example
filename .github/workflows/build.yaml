@@ -23,7 +23,7 @@ jobs:
           tags: bashofmann/neuvector-github-action-example:latest
       - name: Scan Image
         run: |
-          docker run -itd --privileged --name neuvector.controller -e CLUSTER_JOIN_ADDR=localhost -p 18301:18301 -p 18301:18301/udp -p 18300:18300 -p 18400:18400  -p 10443:10443 -v /var/neuvector:/var/neuvector -v /var/run/docker.sock:/var/run/docker.sock -v /proc:/host/proc:ro -v /sys/fs/cgroup/:/host/cgroup/:ro neuvector/controller
+          docker run -itd --privileged --name neuvector.controller -p 18301:18301 -p 18301:18301/udp -p 18300:18300 -p 18400:18400  -p 10443:10443 -v /var/neuvector:/var/neuvector -v /var/run/docker.sock:/var/run/docker.sock -v /proc:/host/proc:ro -v /sys/fs/cgroup/:/host/cgroup/:ro neuvector/controller
           _COUNTER_="0"
           while [ -z "$TOKEN" -a "$_COUNTER_" != "12" ]; do
             _COUNTER_=$((( _COUNTER_ + 1 )))
