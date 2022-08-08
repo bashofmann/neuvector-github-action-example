@@ -34,7 +34,7 @@ jobs:
               TOKEN=""
             fi
           done
-          sleep 20
+          sleep 60
           curl https://$hostname:10443/v1/scan/repository -s -k -H "Content-Type:application/json" -H "X-Auth-Token:$TOKEN" -d $NV_SCANNING_JSON | jq .
           docker logs neuvector.controller
           curl https://$hostname:10443/v1/auth -k -X 'DELETE' -H "Content-Type:application/json" -H "X-Auth-Token:$TOKEN"
