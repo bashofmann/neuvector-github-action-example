@@ -18,9 +18,9 @@ jobs:
           docker build . --tag bashofmann/neuvector-github-action-example:latest
       - name: Scan Image
         run: |          
-          high_vul_to_fail: 0
-          medium_vul_to_fail: 0
-          vul_names_to_fail: ""
+          high_vul_to_fail=0
+          medium_vul_to_fail=0
+          vul_names_to_fail=""
 
           current_dir=$(pwd)
           rm -rf nvreport
