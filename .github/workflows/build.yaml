@@ -44,7 +44,7 @@ jobs:
               TOKEN=""
             fi
           done
-          echo "::set-env name=TOKEN::$TOKEN"
+          echo "TOKEN=$TOKEN" >> $GITHUB_ENV
       - name: Scanning
         run: |
           sleep 20
