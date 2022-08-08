@@ -16,14 +16,15 @@ jobs:
       - name: Build Image
         run: |
           docker build . --tag bashofmann/neuvector-github-action-example:latest
-          docker images
       - name: Scan Image
         run: |          
+          high_vul_to_fail: 0
+          medium_vul_to_fail: 0
+          vul_names_to_fail: ""
+
           current_dir=$(pwd)
           rm -rf nvreport
           mkdir nvreport
-          
-          docker images
 
           docker run --name neuvector.scanner --rm -e SCANNER_REPOSITORY=bashofmann/neuvector-github-action-example -e SCANNER_TAG=latest -e SCANNER_ON_DEMAND=true -v /var/run/docker.sock:/var/run/docker.sock -v $current_dir:/var/neuvector neuvector/scanner:latest
 
