@@ -8,9 +8,6 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    env:
-      NV_LOGIN_JSON: '{"password":{"username":"admin","password":"admin"}}'
-      NV_SCANNING_JSON: '{"request":{"registry":"","username":"","password":"","repository":"bashofmann/neuvector-github-action-example","tag":"latest"}}'
     steps:
       - uses: actions/checkout@v1
       - name: Build Image
