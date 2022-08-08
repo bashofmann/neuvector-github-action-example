@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build Image
         run: |
-          docker build . bashofmann/neuvector-github-action-example:latest
+          docker build . --tag bashofmann/neuvector-github-action-example:latest
           docker images
       - name: Scan Image
         run: |          
