@@ -18,8 +18,8 @@ jobs:
           docker build . --tag bashofmann/neuvector-github-action-example:latest
       - name: Scan Image
         run: |          
-          high_vul_to_fail=0
-          medium_vul_to_fail=0
+          high_vul_to_fail=1
+          medium_vul_to_fail=1
           vul_names_to_fail=""
 
           current_dir=$(pwd)
