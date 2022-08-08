@@ -16,7 +16,7 @@ jobs:
       - name: Scan Image
         uses: bashofmann/neuvector-image-scan-action@main
         with:
-          image-repository: bashofmann
+          image-repository: bashofmann/neuvector-github-action-example
           image-tag: latest
           min-high-cves-to-fail: '1'
           min-medium-cves-to-fail: '1'
