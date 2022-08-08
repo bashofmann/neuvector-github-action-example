@@ -12,15 +12,11 @@ jobs:
       NV_LOGIN_JSON: '{"password":{"username":"admin","password":"admin"}}'
       NV_SCANNING_JSON: '{"request":{"registry":"","username":"","password":"","repository":"bashofmann/neuvector-github-action-example","tag":"latest"}}'
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: false
-          tags: bashofmann/neuvector-github-action-example:latest
+      - uses: actions/checkout@v1
+      - name: Build Image
+        run: |
+          docker build . bashofmann/neuvector-github-action-example:latest
+          docker images
       - name: Scan Image
         run: |          
           current_dir=$(pwd)
