@@ -12,10 +12,11 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build Image
         run: |
-          docker build . --tag bashofmann/neuvector-github-action-example:latest
+          docker build . --tag testregistry.example.com/bashofmann/neuvector-github-action-example:latest
       - name: Scan Image
         uses: bashofmann/neuvector-image-scan-action@main
         with:
+          image-registry: https://testregistry.example.com/
           image-repository: bashofmann/neuvector-github-action-example
           image-tag: latest
           min-high-cves-to-fail: '1'
